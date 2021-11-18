@@ -609,7 +609,8 @@ if (spoilers.length > 0) {
     const spActiveHeader = spoilersBlock.querySelector('[data-spoiler].active')
     if (spActiveHeader) {
       spActiveHeader.classList.remove('active')
-      _close(spActiveHeader.nextElementSibling, 500)
+      slideUp(spActiveHeader.nextElementSibling, 500)
+      // _close(spActiveHeader.nextElementSibling, 500)
     }
   }
 }
@@ -661,11 +662,70 @@ function _close(el, time = 500) {
     }, time);
   }
 }
-const slideToggle = (el, duration = 500) => {
+function slideDown(el, time = 500, display = 'block') {
+  return new Promise(resolve=>{
+      if (!el.classList.contains('slide')) {
+        el.classList.add('slide')
+        el.style.height = '0px'
+        el.style.overflow = 'hidden'
+        el.style.display = display
+        el.style.opacity = 0
+        el.style.boxSizing = 'content-box'
+        el.style.paddingTop = 0
+        el.style.paddingBottom = 0
+        el.style.marginTop = 0
+        el.style.marginBottom = 0
+        el.style.transition = `all ${time}ms`
+        el.hidden = false
+        setTimeout(() => {
+          el.style.height = el.scrollHeight + 'px'
+          el.style.opacity = 1
+          el.style.paddingTop = null
+          el.style.paddingBottom = null
+          el.style.marginTop = null
+          el.style.marginBottom = null
+          // el.style.boxSizing = null
+        }, 10);
+        setTimeout(() => {
+          el.style.overflow = null
+          el.style.opacity = null
+          el.style.display = display
+          el.classList.remove('slide')
+          resolve(el)
+        }, time);
+      }
+  })
+}
+function slideUp(el, time = 500) {
+  return new Promise(resolve => {
+    if (!el.classList.contains('slide')) {
+      el.classList.add('slide')
+      el.style.opacity = 1
+      el.style.overflow = 'hidden'
+      el.style.height = el.offsetHeight + 'px'
+      el.style.transition = `all ${time}ms`
+      setTimeout(() => {
+        el.style.opacity = 0
+        el.style.height = 0
+        el.style.paddingTop = 0
+        el.style.paddingBottom = 0
+      }, 10);
+      setTimeout(() => {
+        el.hidden = true
+        el.classList.remove('slide')
+        el.removeAttribute('style')
+        resolve(el)
+      }, time);
+    }
+  })
+}
+const slideToggle = (el, duration = 5500) => {
   if (el.hidden) {
-    return _open(el, duration)
+    // return _open(el, duration)
+    return slideDown(el, duration)
   } else {
-    return _close(el, duration)
+    // return _close(el, duration)
+    return slideUp(el, duration)
   }
 }
 
